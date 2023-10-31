@@ -13,7 +13,7 @@ except CatchableError as e:
   echo "Cannot get user: " & e.msg
   return %*{"error": "Cannot get user " & userInfo.name}
 let news = try:
-  getNewForUser(user.id)
+  getNewsForUser(user.id)
 except CatchableError as e:
   echo "Cannot get news for user: " & e.msg
   return %*{"error": "Cannot get news for user " & userInfo.name}
@@ -35,10 +35,10 @@ crucial "_what_ went wrong" information we need to decouple the exceptions from
 the application code:
 
 ```nim
-try:
+labeledTry:
   let
     user = getUser(userInfo) |> User
-    news = getNewForUser(user.id) |> News
+    news = getNewsForUser(user.id) |> News
     relatedNews = getRelatedNews(news) |> Related
   return %*{"data": {"news": news.value, "relatedNews": relatedNews.value}}
 except CatchableError as e:
@@ -63,11 +63,11 @@ bonus these labels are available in the `finally` branch so you can also know
 which parts of your code requires cleanup:
 
 ```nim
-try:
+labeledTry:
   let user = getUser(userInfo) |> User
   label(News):
     let
-      news = getNewForUser(user.id)
+      news = getNewsForUser(user.id)
       relatedNews = getRelatedNews(news)
     return %*{"data": {"news": news.value, "relatedNews": relatedNews.value}}
 except CatchableError as e:
