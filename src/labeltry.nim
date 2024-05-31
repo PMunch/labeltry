@@ -22,7 +22,7 @@ macro labeledTry*(body: untyped, branches: varargs[untyped]): untyped =
     pipeArrow = nnkAccQuoted.newTree(newIdentNode("|>"))
   result = nnkBlockStmt.newTree(newEmptyNode(), newStmtList(quote do:
     var
-      `labels` {.compileTime.}: seq[string]
+      `labels` {.compileTime, global.}: seq[string]
       `raisedLabel` = -1
   ))
   result[1].add nnkTryStmt.newTree(quote do:
@@ -45,7 +45,7 @@ macro labeledTry*(body: untyped, branches: varargs[untyped]): untyped =
     var branch = branch
     branch[^1].insert(0, quote do:
       buildEnum(`labels`)
-      template getLabel(): untyped =
+      template getLabel(): untyped {.used.} =
         Label(`raisedLabel` + 1)
     )
     result[1][^1].add branch

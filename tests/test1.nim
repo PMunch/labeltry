@@ -52,3 +52,10 @@ test "Repeated label":
     check Label.low == NoLabel
     check Label.high == ParseErr
     check Label.high.int == 1
+test "Labeling in proc":
+  proc main() =
+    labeledTry:
+      let num = parseInt("100t") |> ParseErr
+    except CatchableError:
+      check getLabel() == ParseErr
+  main()
